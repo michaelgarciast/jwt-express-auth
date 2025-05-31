@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Autenticación</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Preline UI -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/preline@1.0.0/dist/preline.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Inter -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                300: '#86efac',
+                400: '#4ade80',
+                500: '#22c55e',
+                600: '#16a34a',
+                700: '#15803d',
+                800: '#166534',
+                900: '#14532d',
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-gradient-to-br from-primary-100 via-primary-300 to-primary-500 min-h-screen flex items-center justify-center"
+  >
+    <div
+      class="w-full max-w-6xl bg-white rounded-xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2"
+    >
+      <!-- Left Section -->
+      <div
+        class="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-primary-500 to-primary-700 text-white p-8"
+      >
+        <h1 class="text-4xl font-bold mb-4">Bienvenido</h1>
+        <p class="text-lg">
+          Accede a tu cuenta o regístrate para comenzar a disfrutar de nuestros
+          servicios.
+        </p>
+      </div>
+
+      <!-- Right Section -->
+      <div class="p-8">
+        <% if (user) { %>
+        <div class="text-center">
+          <div
+            class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4"
+          >
+            <svg
+              class="h-8 w-8 text-green-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">
+            ¡Bienvenido de nuevo!
+          </h2>
+          <p class="text-gray-600 mb-6">
+            Has iniciado sesión como
+            <span class="font-semibold text-primary-600"
+              ><%= user.username %></span
+            >
+          </p>
+
+          <div class="flex flex-col space-y-3">
+            <a
+              href="/protected"
+              class="w-full px-4 py-2 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-primary-500 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all"
+            >
+              Ir a la página protegida
+            </a>
+            <button
+              onclick="logout()"
+              class="w-full px-4 py-2 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="flex border-b">
+          <button
+            onclick="switchTab('login')"
+            class="hs-tab-active:bg-primary-50 hs-tab-active:text-primary-600 hs-tab-active:hover:text-primary-600 hs-tab-active:border-primary-600 py-4 px-6 inline-flex items-center gap-2 bg-white text-sm font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-primary-600 active"
+            id="login-tab"
+          >
+            Iniciar sesión
+          </button>
+          <button
+            onclick="switchTab('register')"
+            class="hs-tab-active:bg-primary-50 hs-tab-active:text-primary-600 hs-tab-active:hover:text-primary-600 hs-tab-active:border-primary-600 py-4 px-6 inline-flex items-center gap-2 bg-white text-sm font-medium text-center border-b-2 border-transparent text-gray-500 hover:text-primary-600"
+            id="register-tab"
+          >
+            Registrarse
+          </button>
+        </div>
+
+        <div class="p-8">
+          <div
+            id="login"
+            class="active"
+            role="tabpanel"
+            aria-labelledby="login-tab"
+          >
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-gray-800">
+                Bienvenido de nuevo
+              </h2>
+              <p class="text-gray-600">
+                Inicia sesión para acceder a tu cuenta
+              </p>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+              <div>
+                <label
+                  for="login-username"
+                  class="block text-sm font-medium mb-2"
+                  >Usuario</label
+                >
+                <input
+                  type="text"
+                  id="login-username"
+                  name="username"
+                  class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ingresa tu usuario"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  for="login-password"
+                  class="block text-sm font-medium mb-2"
+                  >Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="login-password"
+                  name="password"
+                  class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Ingresa tu contraseña"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-primary-500 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all"
+              >
+                Iniciar sesión
+              </button>
+            </form>
+
+            <div
+              id="loginMessage"
+              class="hidden mt-4 p-4 text-sm rounded-md"
+            ></div>
+          </div>
+
+          <div
+            id="register"
+            class="hidden"
+            role="tabpanel"
+            aria-labelledby="register-tab"
+          >
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-gray-800">Comienza ahora</h2>
+              <p class="text-gray-600">Crea tu cuenta hoy mismo</p>
+            </div>
+
+            <form id="registerForm" class="space-y-4">
+              <div>
+                <label
+                  for="register-username"
+                  class="block text-sm font-medium mb-2"
+                  >Usuario</label
+                >
+                <input
+                  type="text"
+                  id="register-username"
+                  name="username"
+                  class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Elige un usuario"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  for="register-password"
+                  class="block text-sm font-medium mb-2"
+                  >Contraseña</label
+                >
+                <input
+                  type="password"
+                  id="register-password"
+                  name="password"
+                  class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-primary-500 focus:ring-primary-500"
+                  placeholder="Crea una contraseña"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-primary-500 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all"
+              >
+                Registrarse
+              </button>
+            </form>
+
+            <div
+              id="registerMessage"
+              class="hidden mt-4 p-4 text-sm rounded-md"
+            ></div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/preline@1.0.0/dist/preline.min.js"></script>
+    <script>
+      // Tab switching function
+      function switchTab(tabName) {
+        // Hide all tab contents
+        document.querySelectorAll('[role="tabpanel"]').forEach((tab) => {
+          tab.classList.add('hidden');
+          tab.classList.remove('active');
+        });
+
+        // Deactivate all tabs
+        document.querySelectorAll('[role="tab"]').forEach((tab) => {
+          tab.classList.remove('active');
+          tab.classList.remove(
+            'hs-tab-active:bg-primary-50',
+            'hs-tab-active:text-primary-600',
+            'hs-tab-active:hover:text-primary-600',
+            'hs-tab-active:border-primary-600',
+          );
+        });
+
+        // Activate the selected tab and content
+        document.getElementById(tabName).classList.remove('hidden');
+        document.getElementById(tabName).classList.add('active');
+        document
+          .getElementById(`${tabName}-tab`)
+          .classList.add(
+            'active',
+            'hs-tab-active:bg-primary-50',
+            'hs-tab-active:text-primary-600',
+            'hs-tab-active:hover:text-primary-600',
+            'hs-tab-active:border-primary-600',
+          );
+      }
+
+      // Handle login form submission
+      document
+        .getElementById('loginForm')
+        ?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+          const messageDiv = document.getElementById('loginMessage');
+
+          // Reset message
+          messageDiv.className = 'hidden mt-4 p-4 text-sm rounded-md';
+
+          try {
+            const response = await fetch('/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              window.location.href = '/protected';
+            } else {
+              messageDiv.textContent = result.error || 'Login failed';
+              messageDiv.className =
+                'bg-red-50 text-red-600 mt-4 p-4 text-sm rounded-md';
+              messageDiv.classList.remove('hidden');
+            }
+          } catch (error) {
+            messageDiv.textContent = 'An error occurred during login';
+            messageDiv.className =
+              'bg-red-50 text-red-600 mt-4 p-4 text-sm rounded-md';
+            messageDiv.classList.remove('hidden');
+          }
+        });
+
+      // Handle register form submission - CORREGIDO
+      document
+        .getElementById('registerForm')
+        ?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target);
+          const data = Object.fromEntries(formData.entries());
+          const messageDiv = document.getElementById('registerMessage');
+
+          // Reset message
+          messageDiv.className = 'hidden mt-4 p-4 text-sm rounded-md';
+
+          try {
+            const response = await fetch('/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              messageDiv.textContent = 'Registration successful! Please login.';
+              messageDiv.className =
+                'bg-green-50 text-green-600 mt-4 p-4 text-sm rounded-md';
+              messageDiv.classList.remove('hidden');
+
+              e.target.reset();
+              switchTab('login');
+            } else {
+              messageDiv.textContent = result.error || 'Registration failed';
+              messageDiv.className =
+                'bg-red-50 text-red-600 mt-4 p-4 text-sm rounded-md';
+              messageDiv.classList.remove('hidden');
+            }
+          } catch (error) {
+            messageDiv.textContent = 'An error occurred during registration';
+            messageDiv.className =
+              'bg-red-50 text-red-600 mt-4 p-4 text-sm rounded-md';
+            messageDiv.classList.remove('hidden');
+          }
+        });
+
+      async function logout() {
+        try {
+          const response = await fetch('/logout', {
+            method: 'POST',
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          }
+        } catch (error) {
+          console.error('Logout failed:', error);
+        }
+      }
+    </script>
+  </body>
+</html>
